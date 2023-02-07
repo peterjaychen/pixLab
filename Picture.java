@@ -145,6 +145,13 @@ public class Picture extends SimplePicture
 		  }
 	  }
   }
+  /** To pixelate by diving the area into size x size
+   * 
+   */
+  public void pixelate(int size)
+  {
+	  
+  }
   
   /** Method that mirrors the picture around a 
     * vertical mirror in the center of the picture
