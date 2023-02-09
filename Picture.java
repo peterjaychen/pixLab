@@ -157,31 +157,56 @@ public class Picture extends SimplePicture
     int length = pixels[0].length;
     int width = pixels.length;
 
-    int result = length/width;
+    int resultLength = length/size;
+    int widthResult = width/size;
 
     int red = 0;
     int blue = 0;
     int green = 0;
-
-
-    for (int i = 0; i < size; i++)
-    {
-      for (int j = 0 ; j < size; j++)
-      {
-        Pixel pixelObj = pixels[i][j];
-        red =+ pixelObj.getRed();
-        green =+ pixelObj.getGreen();
-        blue =+ pixelObj.getBlue();
-      }
-    }
-    int averageRed = red / (size*size);
-    int averageGreen = green/ (size * size);
-    int averageBlue = blue / (size *size);
+	
+	for(int g = 0; g < pixels[0].length; g += size)
+	{
+		for(int h = 0; h < pixels.length; h += size)
+		{
+			for (int i = e; i < e + size; i++)
+			{
+			  for (int j = h ; j < h + size; j++)
+			  {
+				Pixel pixelObj = pixels[i][j];
+				red =+ pixelObj.getRed();
+				green =+ pixelObj.getGreen();
+				blue =+ pixelObj.getBlue();
+			  }
+			}
+			 int averageRed = red / (size*size);
+			int averageGreen = green/ (size * size);
+			int averageBlue = blue / (size *size);
+			
+			for(int k = h; k < h + size; k++) 
+			{
+				for(int l = k; l < k + size; l++)
+					if(k < pixels.length && l < pixels[0].length)
+						pixels[l][k].setColor(new Color(averageRed, averageBlue, averageGreen));
+			}
+		}
+	}
  }
 
-  public Picture blur(int size)
+  /** Method that blurs the picture
+   * @param	size	Blur size, greater is more blur
+   * @return 		Blurred picture
+   */
+ // public Picture blur(int size)
   {
-
+	Pixel [][] pixels = this.getPixels2D();
+	Picture result = new Picture(pixels.length, pixels[0].length); 
+  }
+  
+  public Picture swapLeftRight()
+  {
+	  // int column = this.getCol();
+	 //  newColumn = (column + width / 2) % width;
+	  
   }
   
   /** Method that mirrors the picture around a 
