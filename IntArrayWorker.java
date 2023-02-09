@@ -42,7 +42,11 @@ public class IntArrayWorker
   public int getColTotal(int colIn)
   {
 	  int total = 0;
-	  for(int i = 0; i <= m
+	  for(int i = 0; i < matrix.length; i++)
+    {
+      total += matrix[i][colIn];
+    }
+    return total;
   }
   /**
    * Method to return the total 

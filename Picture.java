@@ -71,6 +71,8 @@ public class Picture extends SimplePicture
   
   ////////////////////// methods ///////////////////////////////////////
   
+
+
   /**
    * Method to return a string with information about this picture.
    * @return a string with information about the picture such as fileName,
@@ -150,7 +152,36 @@ public class Picture extends SimplePicture
    */
   public void pixelate(int size)
   {
-	  
+    Pixel[][] pixels = this.getPixels2D();
+
+    int length = pixels[0].length;
+    int width = pixels.length;
+
+    int result = length/width;
+
+    int red = 0;
+    int blue = 0;
+    int green = 0;
+
+
+    for (int i = 0; i < size; i++)
+    {
+      for (int j = 0 ; j < size; j++)
+      {
+        Pixel pixelObj = pixels[i][j];
+        red =+ pixelObj.getRed();
+        green =+ pixelObj.getGreen();
+        blue =+ pixelObj.getBlue();
+      }
+    }
+    int averageRed = red / (size*size);
+    int averageGreen = green/ (size * size);
+    int averageBlue = blue / (size *size);
+ }
+
+  public Picture blur(int size)
+  {
+
   }
   
   /** Method that mirrors the picture around a 
