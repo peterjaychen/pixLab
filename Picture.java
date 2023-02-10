@@ -163,30 +163,41 @@ public class Picture extends SimplePicture
     int red = 0;
     int blue = 0;
     int green = 0;
+
 	
-	for(int g = 0; g < pixels[0].length; g += size)
+	for(int picWidth = 0; picWidth < pixels[0].length; picWidth += size)
 	{
-		for(int h = 0; h < pixels.length; h += size)
+		for(int picLength = 0; picLength < pixels.length; picLength += size)
 		{
-			for (int i = e; i < e + size; i++)
+      // reset the color values
+      red = 0;
+      green = 0;
+      blue = 0;
+    
+			for (int i = picLength; i < picLength + size; i++)
 			{
-			  for (int j = h ; j < h + size; j++)
+			  for (int j = picWidth; j < picWidth + size; j++)
 			  {
-				Pixel pixelObj = pixels[i][j];
-				red =+ pixelObj.getRed();
-				green =+ pixelObj.getGreen();
-				blue =+ pixelObj.getBlue();
+          if(i < pixels.length && j < pixels[0].length)
+          {
+            Pixel pixelObj = pixels[i][j];
+            red += pixelObj.getRed();
+            green += pixelObj.getGreen();
+            blue += pixelObj.getBlue();
+          }
 			  }
 			}
-			 int averageRed = red / (size*size);
-			int averageGreen = green/ (size * size);
-			int averageBlue = blue / (size *size);
+			int averageRed = red / (size *size);
+			int averageGreen = green/ (size  * size);
+			int averageBlue = blue / (size * size);
 			
-			for(int k = h; k < h + size; k++) 
+      for (int i = picLength; i < picLength + size; i++)
 			{
-				for(int l = k; l < k + size; l++)
-					if(k < pixels.length && l < pixels[0].length)
-						pixels[l][k].setColor(new Color(averageRed, averageBlue, averageGreen));
+			  for (int j = picWidth; j < picWidth + size; j++)
+			  {
+          if(i < pixels.length && j < pixels[0].length)
+      			pixels[i][j].setColor(new Color(averageRed, averageGreen, averageBlue));
+        }
 			}
 		}
 	}
@@ -198,11 +209,11 @@ public class Picture extends SimplePicture
    */
  // public Picture blur(int size)
   {
-	Pixel [][] pixels = this.getPixels2D();
-	Picture result = new Picture(pixels.length, pixels[0].length); 
+	//Pixel [][] pixels = this.getPixels2D();
+////	Picture result = new Picture(pixels.length, pixels[0].length); 
   }
   
-  public Picture swapLeftRight()
+  //public Picture swapLeftRight()
   {
 	  // int column = this.getCol();
 	 //  newColumn = (column + width / 2) % width;
@@ -314,7 +325,7 @@ public class Picture extends SimplePicture
     for (int row = 0; row < pixels.length; row++)
     {
       for (int col = 0; 
-           col < pixels[0].length-1; col++)
+           col < pixels[0].length - 1; col++)
       {
         leftPixel = pixels[row][col];
         rightPixel = pixels[row][col+1];
@@ -334,9 +345,9 @@ public class Picture extends SimplePicture
    */
   public static void main(String[] args) 
   {
-    Picture beach = new Picture("beach.jpg");
+    Picture beach = new Picture("images/beach.jpg");
     beach.explore();
-    beach.zeroBlue();
+    beach.pixelate(5);
     beach.explore();
   }
   
