@@ -207,10 +207,16 @@ public class Picture extends SimplePicture
    * @param	size	Blur size, greater is more blur
    * @return 		Blurred picture
    */
- // public Picture blur(int size)
+  public Picture blur(int size)
   {
-	//Pixel [][] pixels = this.getPixels2D();
-////	Picture result = new Picture(pixels.length, pixels[0].length); 
+  	Pixel [][] pixels = this.getPixels2D();
+  	Picture result = new Picture(pixels.length, pixels[0].length); 
+    // result.copyPictu;
+    result.pixelate(3);
+    Pixel[][] resultPixels = result.getPixels2D();
+
+
+    return result;
   }
   
   //public Picture swapLeftRight()
@@ -347,8 +353,8 @@ public class Picture extends SimplePicture
   {
     Picture beach = new Picture("images/beach.jpg");
     beach.explore();
-    beach.pixelate(5);
-    beach.explore();
+    Picture newPic = beach.blur(5);
+    newPic.explore();
   }
   
 } // this } is the end of class Picture, put all new methods before this
