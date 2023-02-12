@@ -285,9 +285,9 @@ public class Picture extends SimplePicture
     Picture result = new Picture(pixels.length, pixels[0].length);
     Pixel[][] resultPixels = result.getPixels2D();
 
-    for(int col = 0; col < pixels[0].length; col++)
+    for (int row = 0; row < pixels.length; row++)
     {
-      for(int row = 0; row < pixels.length; row++)
+      for (int col = 0; col < pixels[0].length; col++)
       {
         Color aveColor = averagePixel(row, col, pixels, size);
         int redAve = aveColor.getRed();
@@ -299,9 +299,16 @@ public class Picture extends SimplePicture
         int currentGreen = currentPixel.getGreen();
         int currentBlue = currentPixel.getBlue();
         
-        int newRed = 2 * currentRed - redAve;
-        int newGreen = 2 * currentGreen - greenAve;
-        int newBlue = 2 * currentBlue - blueAve;
+        int newRed = Math.max(0, Math.min(255, 2 * currentRed - redAve));
+        int newGreen = Math.max( 0, Math.min(255, 2 * currentGreen - greenAve));
+        int newBlue = Math.max(0 , Math.min(255, 2 * currentBlue - blueAve));
+
+        if(newRed < 0 || newRed > 255)
+        {
+          System.out.println("How?");
+
+        }
+
         resultPixels[row][col].setColor(new Color(newRed, newGreen, newBlue));
       }
     }
@@ -426,6 +433,26 @@ public class Picture extends SimplePicture
       }
     }
   }
+
+  public void debug()
+  {
+    Pixel[][] d = this.getPixels2D();
+
+    int begCol = 85;
+    int endCol = 95;
+
+    for (int c = begCol; c < endCol; c++)
+      System.out.printf("%4d ",c);
+    System.out.println();
+    System.out.println();
+
+    for (int r = 0; r < 2; r++)
+    {
+      for (int c = begCol; c < endCol; c++)
+        System.out.printf("%4d ",d[r][c].getGreen());
+      System.out.println();
+    }
+  }
   
   
   /* Main method for testing - each class in Java can have a main 
@@ -435,9 +462,10 @@ public class Picture extends SimplePicture
   {
     Picture beach = new Picture("images/beach.jpg");
     Picture swan = new Picture("images/swan.jpg");
+    swan.debug();
     swan.explore();
-    Picture newPic = swan.enhance(10);
-    //swan.pixelate(48);
+    Picture newPic = swan.enhance(3);
+    // swan.pixelate(48);
     newPic.explore();
   }
   
