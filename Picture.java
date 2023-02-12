@@ -157,8 +157,10 @@ public class Picture extends SimplePicture
     int length = pixels[0].length;
     int width = pixels.length;
 
-    int resultLength = length/size;
-    int widthResult = width/size;
+    // int resultLength = length/size;
+    // int widthResult = width/size;
+    
+    int numValidPix = 0;
 
     int red = 0;
     int blue = 0;
@@ -169,35 +171,37 @@ public class Picture extends SimplePicture
 	{
 		for(int picLength = 0; picLength < pixels.length; picLength += size)
 		{
-      // reset the color values
-      red = 0;
-      green = 0;
-      blue = 0;
+		  // reset the color values
+		  red = 0;
+		  green = 0;
+		  blue = 0;
     
 			for (int i = picLength; i < picLength + size; i++)
 			{
 			  for (int j = picWidth; j < picWidth + size; j++)
 			  {
-          if(i < pixels.length && j < pixels[0].length)
-          {
-            Pixel pixelObj = pixels[i][j];
-            red += pixelObj.getRed();
-            green += pixelObj.getGreen();
-            blue += pixelObj.getBlue();
-          }
+				  if(i < pixels.length && j < pixels[0].length)
+				  {
+					Pixel pixelObj = pixels[i][j];
+					red += pixelObj.getRed();
+					green += pixelObj.getGreen();
+					blue += pixelObj.getBlue();
+					numValidPix++;
+				  }
 			  }
 			}
-			int averageRed = red / (size *size);
-			int averageGreen = green/ (size  * size);
-			int averageBlue = blue / (size * size);
+			int averageRed = red / (numValidPix);
+			int averageGreen = green/ (numValidPix);
+			int averageBlue = blue / (numValidPix);
+			numValidPix = 0;
 			
-      for (int i = picLength; i < picLength + size; i++)
+			for (int i = picLength; i < picLength + size; i++)
 			{
-			  for (int j = picWidth; j < picWidth + size; j++)
-			  {
-          if(i < pixels.length && j < pixels[0].length)
-      			pixels[i][j].setColor(new Color(averageRed, averageGreen, averageBlue));
-        }
+				for (int j = picWidth; j < picWidth + size; j++)
+				{
+				  if(i < pixels.length && j < pixels[0].length)
+						pixels[i][j].setColor(new Color(averageRed, averageGreen, averageBlue));
+				}
 			}
 		}
 	}
@@ -210,20 +214,98 @@ public class Picture extends SimplePicture
   public Picture blur(int size)
   {
   	Pixel [][] pixels = this.getPixels2D();
-  	Picture result = new Picture(pixels.length, pixels[0].length); 
-    // result.copyPictu;
-    result.pixelate(3);
-    Pixel[][] resultPixels = result.getPixels2D();
-
-
+  	Picture result = new Picture(this); 
+  	Pixel [][] resultPixels = result.getPixels2D();
+	   
+    for(int col = 0; col < pixels[0].length; col++)
+    {
+      for(int row = 0; row < pixels.length; row++)
+      {
+        resultPixels[row][col].setColor(averagePixel(row, col, pixels, size));
+      }
+    }
+	
     return result;
   }
   
-  //public Picture swapLeftRight()
+  public Color averagePixel(int i, int j, Pixel [][] pixel, int size)
   {
-	  // int column = this.getCol();
-	 //  newColumn = (column + width / 2) % width;
+	  int colStart = j - (size/2);
+	  int colEnd = colStart + (size - 1);
 	  
+	  int rowStart = i - (size / 2);
+	  int rowEnd = rowStart + (size - 1);
+	  
+	  int numValidPixels = 0;
+	  
+		int redTotal = 0;
+		int greenTotal = 0;
+		int blueTotal = 0; 
+	  
+	  for(int col = colStart; col <= colEnd; col++)
+	  {
+      for(int row = rowStart; row <= rowEnd; row++)
+      {
+        if((row >= 0 && row < pixel.length) && (col < pixel[0].length && col >= 0)) {
+          redTotal += pixel[row][col].getRed();
+          greenTotal += pixel[row][col].getGreen();
+          blueTotal += pixel[row][col].getBlue();	
+          numValidPixels++;
+        }
+      }
+	  }
+
+    // This is causing half of my life problems
+	  // System.out.println(numValidPixels);
+	  // Color returnColor = new Color(1, 1,1);
+	  // if(numValidPixels != 0)
+    // WHY IS THIS ZEROOOOO
+    if (numValidPixels == 0)
+    {
+      System.out.println("Tralfaze");
+    }
+
+		Color returnColor = new Color(redTotal/numValidPixels, greenTotal/numValidPixels, blueTotal/numValidPixels);
+	  return returnColor;
+  }
+/** Method that enhances a picture by getting average Color around
+ * a pixel then applies the following formula:
+ *
+ * pixelColor <- 2 * currentValue - averageValue
+ *
+ * size is the area to sample for blur.
+ *
+ * @param size Larger means more area to average around pixel
+ * and longer compute time.
+ * @return enhanced picture
+ */
+  public Picture enhance(int size)
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    Picture result = new Picture(pixels.length, pixels[0].length);
+    Pixel[][] resultPixels = result.getPixels2D();
+
+    for(int col = 0; col < pixels[0].length; col++)
+    {
+      for(int row = 0; row < pixels.length; row++)
+      {
+        Color aveColor = averagePixel(row, col, pixels, size);
+        int redAve = aveColor.getRed();
+        int greenAve= aveColor.getGreen();
+        int blueAve = aveColor.getBlue();
+        
+        Pixel currentPixel = pixels[row][col];
+        int currentRed = currentPixel.getRed();
+        int currentGreen = currentPixel.getGreen();
+        int currentBlue = currentPixel.getBlue();
+        
+        int newRed = 2 * currentRed - redAve;
+        int newGreen = 2 * currentGreen - greenAve;
+        int newBlue = 2 * currentBlue - blueAve;
+        resultPixels[row][col].setColor(new Color(newRed, newGreen, newBlue));
+      }
+    }
+    return result;
   }
   
   /** Method that mirrors the picture around a 
@@ -352,8 +434,10 @@ public class Picture extends SimplePicture
   public static void main(String[] args) 
   {
     Picture beach = new Picture("images/beach.jpg");
-    beach.explore();
-    Picture newPic = beach.blur(5);
+    Picture swan = new Picture("images/swan.jpg");
+    swan.explore();
+    Picture newPic = swan.enhance(10);
+    //swan.pixelate(48);
     newPic.explore();
   }
   
