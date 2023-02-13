@@ -255,11 +255,6 @@ public class Picture extends SimplePicture
       }
 	  }
 
-    // This is causing half of my life problems
-	  // System.out.println(numValidPixels);
-	  // Color returnColor = new Color(1, 1,1);
-	  // if(numValidPixels != 0)
-    // WHY IS THIS ZEROOOOO
     if (numValidPixels == 0)
     {
       System.out.println("Tralfaze");
@@ -303,16 +298,105 @@ public class Picture extends SimplePicture
         int newGreen = Math.max( 0, Math.min(255, 2 * currentGreen - greenAve));
         int newBlue = Math.max(0 , Math.min(255, 2 * currentBlue - blueAve));
 
-        if(newRed < 0 || newRed > 255)
-        {
-          System.out.println("How?");
-
-        }
-
         resultPixels[row][col].setColor(new Color(newRed, newGreen, newBlue));
       }
     }
     return result;
+  }
+
+  public Picture swapLeftRight()
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    Picture result = new Picture(pixels.length, pixels[0].length);
+    Pixel[][] resultPixels = result.getPixels2D();
+
+    int width = pixels[0].length;
+    // int column = pixels[0].length;
+
+    // get Color information from the pixel
+    for(int row = 0; row < pixels.length; row++)
+    {
+      for(int col = 0; col < pixels[0].length; col++)
+      {
+        // System.out.println("Row")
+        
+        int newColumn =	(col	+	width	/	2)	%	width;
+        // int newWidth = width;
+
+        Pixel currentPixel = pixels[row][col];
+        int red = currentPixel.getRed();
+        int green = currentPixel.getGreen();
+        int blue = currentPixel.getBlue();
+
+        resultPixels[row][newColumn].setColor(new Color(red, green, blue));
+      }
+    }
+    return result;
+  }
+
+  /* <Description here>
+  * @param shiftCount The number of pixels to shift to the right
+  * @param steps The number of steps
+  * @return The picture with pixels shifted in stair steps
+  */
+  public Picture stairStep(int shiftCount, int steps)
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    Picture result = new Picture(pixels.length, pixels[0].length);
+    Pixel[][] resultPixels = result.getPixels2D();
+
+    int width = pixels[0].length;
+
+    int pixJumpVert = pixels.length / steps;
+    // how many rows I need per step, 
+    // if I increment past that, I would need to add more to the shift (?)
+
+    for(int row = 0; row < pixels.length; row++)
+    {
+      for(int col = 0; col < pixels[0].length; col++)
+      {
+        int newColumn = (col + shiftCount) % width;
+
+
+      }
+    }
+    return result;
+  } 
+
+  /* <Description here>
+  * @param maxFactor Max height (shift) of curve in pixels
+  * @return Liquified picture
+  */
+  public Picture liquify(int maxHeight)
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    Picture result = new Picture(pixels.length, pixels[0].length);
+    Pixel[][] resultPixels = result.getPixels2D();
+
+    int height = pixels.length;
+
+    
+    for(int row = 0; row < pixels.length; row++)
+    {
+      for(int col = 0; col < pixels[0].length; col++)
+      {
+        int bellWidth = pixels.length / 5; // not a param, but something that is changed
+      
+        double exponent = Math.pow(row - height / 2.0, 2) / (2.0 * Math.pow(bellWidth, 2));
+        int rightShift = (int)(maxHeight * Math.exp(- exponent));
+
+      }
+    }
+  }
+
+  /* <Description here>
+  * @param amplitude The maximum shift of pixels
+  * @return Wavy picture
+  */
+  public Picture wavy(int amplitude) 
+  {
+      // shift pixels[0].length to the right (instead of the left). that way we get to use mod and 
+      // are able to get wrap on both left and right
   }
   
   /** Method that mirrors the picture around a 
@@ -462,9 +546,10 @@ public class Picture extends SimplePicture
   {
     Picture beach = new Picture("images/beach.jpg");
     Picture swan = new Picture("images/swan.jpg");
-    swan.debug();
-    swan.explore();
-    Picture newPic = swan.enhance(3);
+    Picture motor = new Picture("images/redMotorcycle.jpg");
+    // swan.debug();
+    motor.explore();
+    Picture newPic = motor.swapLeftRight();
     // swan.pixelate(48);
     newPic.explore();
   }
