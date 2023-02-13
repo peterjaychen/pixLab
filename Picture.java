@@ -351,19 +351,19 @@ public class Picture extends SimplePicture
     // how many rows I need per step, 
     // if I increment past that, I would need to add more to the shift (?)
 
-    for(int row = 0; row < pixels.length; row++)
+    for(int row = 0; row < pixels.length; row+= pixJumpVert)
     {
-      for(int col = 0; col < pixels[0].length; col++)
+      for(int col = row; col < pixels[0].length; col++)
       {
-        int newColumn = (col + shiftCount) % width;
-
-
+		 int newColumn = (col + shiftCount) % width;
+		 
       }
     }
     return result;
   } 
 
   /* <Description here>
+   * Suggested: maxHeight~100 pixels
   * @param maxFactor Max height (shift) of curve in pixels
   * @return Liquified picture
   */
@@ -375,7 +375,6 @@ public class Picture extends SimplePicture
 
     int height = pixels.length;
 
-    
     for(int row = 0; row < pixels.length; row++)
     {
       for(int col = 0; col < pixels[0].length; col++)
@@ -384,7 +383,8 @@ public class Picture extends SimplePicture
       
         double exponent = Math.pow(row - height / 2.0, 2) / (2.0 * Math.pow(bellWidth, 2));
         int rightShift = (int)(maxHeight * Math.exp(- exponent));
-
+		
+		
       }
     }
   }
@@ -395,7 +395,8 @@ public class Picture extends SimplePicture
   */
   public Picture wavy(int amplitude) 
   {
-      // shift pixels[0].length to the right (instead of the left). that way we get to use mod and 
+      // shift pixels[0].length - original left
+      //  to the right (instead of the left). that way we get to use mod and 
       // are able to get wrap on both left and right
   }
   
