@@ -347,23 +347,36 @@ public class Picture extends SimplePicture
 
     int width = pixels[0].length;
 
-    int pixJumpVert = pixels.length / steps;
+    int pixperStep= pixels.length / steps;
+    // number of rows are that req before I add shiftCount
     // how many rows I need per step, 
     // if I increment past that, I would need to add more to the shift (?)
 
-    for(int row = 0; row < pixels.length; row+= pixJumpVert)
+    int shiftAmount = 0;
+    for(int row = 0; row < pixels.length; row++)
     {
-      for(int col = row; col < pixels[0].length; col++)
+      if (row % pixperStep == 0) {
+        shiftAmount += shiftCount;
+      }
+
+      for(int col = 0; col < pixels[0].length; col++)
       {
-		 int newColumn = (col + shiftCount) % width;
-		 
+        // for(int numRow = 0)
+		    int newColumn = (col + shiftAmount) % width;
+
+        Pixel currentPixel = pixels[row][col];
+        int red = currentPixel.getRed();
+        int green = currentPixel.getGreen();
+        int blue = currentPixel.getBlue();
+
+        resultPixels[row][newColumn].setColor(new Color(red, green, blue));
       }
     }
     return result;
   } 
 
   /* <Description here>
-   * Suggested: maxHeight~100 pixels
+   * Suggested: maxHeight ~ 100 pixels
   * @param maxFactor Max height (shift) of curve in pixels
   * @return Liquified picture
   */
@@ -374,19 +387,29 @@ public class Picture extends SimplePicture
     Pixel[][] resultPixels = result.getPixels2D();
 
     int height = pixels.length;
+    int width = pixels[0].length;
 
     for(int row = 0; row < pixels.length; row++)
     {
       for(int col = 0; col < pixels[0].length; col++)
       {
-        int bellWidth = pixels.length / 5; // not a param, but something that is changed
+        int bellWidth = pixels.length / 8; // not a param, but something that is changed
       
         double exponent = Math.pow(row - height / 2.0, 2) / (2.0 * Math.pow(bellWidth, 2));
         int rightShift = (int)(maxHeight * Math.exp(- exponent));
-		
-		
+
+        // for(int numRow = 0)
+		    int newColumn = (col + rightShift) % width;
+
+        Pixel currentPixel = pixels[row][col];
+        int red = currentPixel.getRed();
+        int green = currentPixel.getGreen();
+        int blue = currentPixel.getBlue();
+
+        resultPixels[row][newColumn].setColor(new Color(red, green, blue));
       }
     }
+    return result;
   }
 
   /* <Description here>
@@ -398,6 +421,41 @@ public class Picture extends SimplePicture
       // shift pixels[0].length - original left
       //  to the right (instead of the left). that way we get to use mod and 
       // are able to get wrap on both left and right
+      Pixel[][] pixels = this.getPixels2D();
+    Picture result = new Picture(pixels.length, pixels[0].length);
+    Pixel[][] resultPixels = result.getPixels2D();
+
+    int height = pixels.length;
+    int width = pixels[0].length;
+    int rightShift = 0;
+
+    double frequency = 3.0;
+    double phase = 0.0;
+
+    for(int row = 0; row < pixels.length; row++)
+    {
+      for(int col = 0; col < pixels[0].length; col++)
+      {
+        double shifty = amplitude * Math.sin(2 * Math.PI * frequency * (row / (double) height) + phase);
+        rightShift = (int) shifty;
+
+        if (rightShift < 0)
+        {
+          rightShift = width + rightShift;
+        }
+        
+        // for(int numRow = 0)
+		    int newColumn = (col + rightShift) % width;
+
+        Pixel currentPixel = pixels[row][col];
+        int red = currentPixel.getRed();
+        int green = currentPixel.getGreen();
+        int blue = currentPixel.getBlue();
+
+        resultPixels[row][newColumn].setColor(new Color(red, green, blue));
+      }
+    }
+    return result;
   }
   
   /** Method that mirrors the picture around a 
@@ -519,6 +577,36 @@ public class Picture extends SimplePicture
     }
   }
 
+  public Picture abssy(int amplitude) 
+  {
+
+  Pixel[][] pixels = this.getPixels2D();
+    Picture result = new Picture(pixels.length, pixels[0].length);
+    Pixel[][] resultPixels = result.getPixels2D();
+
+    int height = pixels.length;
+    int width = pixels[0].length;
+
+    for(int row = 0; row < pixels.length; row++)
+    {
+      for(int col = 0; col < pixels[0].length; col++)
+      {
+        int rightShift = (int)((Math.abs(row - height/2.0)) * 0.5);
+
+        // for(int numRow = 0)
+		    int newColumn = (col + rightShift) % width;
+
+        Pixel currentPixel = pixels[row][col];
+        int red = currentPixel.getRed();
+        int green = currentPixel.getGreen();
+        int blue = currentPixel.getBlue();
+
+        resultPixels[row][newColumn].setColor(new Color(red, green, blue));
+      }
+    }
+    return result;
+  }
+
   public void debug()
   {
     Pixel[][] d = this.getPixels2D();
@@ -548,9 +636,10 @@ public class Picture extends SimplePicture
     Picture beach = new Picture("images/beach.jpg");
     Picture swan = new Picture("images/swan.jpg");
     Picture motor = new Picture("images/redMotorcycle.jpg");
+    Picture mrgomez = new Picture("images/mrgomez.png");
     // swan.debug();
-    motor.explore();
-    Picture newPic = motor.swapLeftRight();
+    mrgomez.explore();
+    Picture newPic = mrgomez.abssy(50);
     // swan.pixelate(48);
     newPic.explore();
   }
