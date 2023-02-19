@@ -607,6 +607,93 @@ public class Picture extends SimplePicture
     return result;
   }
 
+  public Picture edgeDetectionBelow(int threshold)
+  {
+    // if the color different than the threshold, then an edge is detected
+    Pixel[][] pixels = this.getPixels2D();
+    Picture result = new Picture(pixels.length, pixels[0].length);
+    Pixel[][] resultPixels = result.getPixels2D();
+
+    for(int row = 0; row < pixels.length - 1; row++)
+    {
+      for(int col = 0; col < pixels[0].length; col++)
+      {
+        Pixel currentPixel = pixels[row][col];
+        Pixel otherPixel = pixels[row + 1][col];
+        Color otherPixelColor = otherPixel.getColor();
+        double colorDistance = currentPixel.colorDistance(otherPixelColor);
+        // colorDistance = Math.abs(colorDistance);
+        if(colorDistance > threshold)
+        {
+          resultPixels[row][col].setColor(Color.BLACK);
+        }
+        else
+        {
+          resultPixels[row][col].setColor(Color.WHITE);
+        }
+      }
+    }
+    return result;
+  }
+
+  public Picture greenScreen(String picName1, String picName2)
+  {
+    // 2 pictures that are to be put into the background
+    // background image is "this"
+    Picture pic1 = new Picture(picName1);
+    Picture scaledPic1 = pic1.scaled(2);
+    Pixel[][] pic1Pixels = scaledPic1.getPixels2D();
+
+    Picture pic2 = new Picture(picName2);
+    Picture scaledPic2 = pic2.scaled(2);
+    Pixel[][] pic2Pixels = scaledPic2.getPixels2D();
+
+    // if the color different than the threshold, then an edge is detected
+    Pixel[][] pixels = this.getPixels2D();
+    Picture result = new Picture(pixels.length, pixels[0].length);
+    Pixel[][] resultPixels = result.getPixels2D();
+
+    // green screen color
+    // r: 51 g: 204 b: 51
+    Color greenScreenColor = new Color(51, 204, 51);
+
+    for(int row = 0; row < pixels.length; row++)
+    {
+      for(int col = 0; col < pixels[0].length; col++)
+      {
+        // copy the background over to the result pixels
+        resultPixels[row][col].setColor(pixels[row][col].getColor());
+      }
+
+    } 
+
+    // mouse sitting on the couch is 380, 315
+    for(int row = 0; row < pic1Pixels.length; row++)
+    {
+      for(int col = 0; col < pic1Pixels[0].length; col++)
+      {
+        if(pic1Pixels[row][col].colorDistance(greenScreenColor) > 100)
+        {
+          resultPixels[380 + row][ 315 + col].setColor(pic1Pixels[row][col].getColor());;
+        }
+      }
+    }
+    // cat at 520, 600 (on the floor)
+    for(int row = 0; row < pic2Pixels.length; row++)
+    {
+      for(int col = 0; col < pic2Pixels[0].length; col++)
+      {
+        if(pic2Pixels[row][col].colorDistance(greenScreenColor) > 100)
+        {
+          resultPixels[480 + row][550 + col].setColor(pic2Pixels[row][col].getColor());
+        }
+      }
+    }
+    return result;
+  }
+
+
+
   public void debug()
   {
     Pixel[][] d = this.getPixels2D();
@@ -626,6 +713,27 @@ public class Picture extends SimplePicture
       System.out.println();
     }
   }
+
+  public Picture scaled (int scale)
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    int width = pixels[0].length / scale;
+    int length = pixels.length / scale;
+    
+    Picture scaled = new Picture(length, width);
+    Pixel[][] scaledPixels = scaled.getPixels2D();
+    
+    for(int row = 0; row < length; row++) 
+    {
+      for(int col = 0 ; col < width; col++) 
+      {
+        Color color = pixels[scale*row][scale*col].getColor();
+      
+        scaledPixels[row][col].setColor(color);
+      }
+    }
+    return scaled;
+  }
   
   
   /* Main method for testing - each class in Java can have a main 
@@ -636,10 +744,16 @@ public class Picture extends SimplePicture
     Picture beach = new Picture("images/beach.jpg");
     Picture swan = new Picture("images/swan.jpg");
     Picture motor = new Picture("images/redMotorcycle.jpg");
-    Picture mrgomez = new Picture("images/mrgomez.png");
-    // swan.debug();
-    mrgomez.explore();
-    Picture newPic = mrgomez.abssy(50);
+    Picture doggo = new Picture("images/puppy1GreenScreen.jpg");
+    Picture background = new Picture("images/IndoorHouseLibraryBackground.jpg");
+    // Picture mrgomez = new Picture("images/mrgomez.png");
+    background.explore();
+    // mrgomez.explore();
+    // Picture newPic = mrgomez.abssy(50);
+    Picture newPic = background.greenScreen("images/puppy1GreenScreen.jpg", "images/kitten1GreenScreen.jpg");
+    //Picture newPic = swan.greenScreen(null, null)
+    // Picture newPic = doggo.scaled(4);
+    // Picture newPic = swan.edgeDetectionBelow(50);
     // swan.pixelate(48);
     newPic.explore();
   }
